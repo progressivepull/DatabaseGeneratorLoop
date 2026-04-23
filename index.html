@@ -1,157 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>JSON Generator</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    .question-block {
-      border: 1px solid #ccc;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    textarea { width: 100%; height: 60px; }
-    input[type="text"] { width: 100%; }
-    select { width: 100%; padding: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Generator</title>
+
+    <!-- Standard favicon -->
+    <link rel="icon" href="./app/favicon_io/favicon.ico" sizes="any">
+
+    <!-- PNG favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="./app/favicon_io/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./app/favicon-32x32.png">
+
+    <!-- Android Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./app/favicon_io/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="./app/favicon_io/android-chrome-512x512.png">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./app/favicon_ioapple-touch-icon.png">
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="./app/favicon_iosite.webmanifest">
+
+
+    <!-- LearnLoop Stylesheet -->
+    <link href="./app/index.css" rel="stylesheet" />
+
+    <!-- Bootstrap -->
+    <link href="./app/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="./app/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="./app/jquery/jquery-4.0.0.min.js"></script>
+
+
+    <!-- jQueryUI -->
+    <link rel="stylesheet" href="./app/jquery-ui-1.14.2/jquery-ui.css">
+    <script src="./app/jquery-ui-1.14.2/jquery-ui.min.js"></script>
+
 </head>
 
 <body>
 
-<h2>Template JSON Generator</h2>
+    <div class="top-banner"></div>
 
-<label>How many questions?</label>
-<input type="number" id="questionCount" min="1" value="1">
-<button onclick="generateFields()">Generate</button>
+    <div class="container mt-5">
 
-<div id="questionsContainer"></div>
+            <h2>JSON Generator</h2>
 
-<button onclick="generateJSON()" style="margin-top:20px;">Download JSON</button>
+            <div id="noQuestionsInput">
+                <label>How many questions?</label>
+                <input type="number" id="questionCount" min="1" value="1">
+                <button id="generateFieldsBtn" class="btn btn-info mt-3" >Generate</button>
+            </div>
 
-<script>
-// ===============================
-// Generate Question Input Fields
-// ===============================
-function generateFields() {
-    const count = parseInt(document.getElementById("questionCount").value);
-    const container = document.getElementById("questionsContainer");
-    container.innerHTML = "";
 
-    for (let i = 1; i <= count; i++) {
-        const block = document.createElement("div");
-        block.className = "question-block";
+            <div id="questionsContainer"></div>
 
-        block.innerHTML = `
-            <h3>Question ${i}</h3>
+            <button id="generateJSONBtn" class="btn btn-success mt-3" style="margin-top:20px;">Download JSON</button>
 
-            <label>Problem Description:</label>
-            <textarea id="pd_${i}"></textarea>
 
-            <label>Question Text:</label>
-            <textarea id="q_${i}"></textarea>
 
-            <label>Option A:</label>
-            <input type="text" id="A_${i}">
+    </div>
+    <br><br><br><br><br>
 
-            <label>Option B:</label>
-            <input type="text" id="B_${i}">
+    <footer>
+        <div class="left">LearnLoop</div>
+        <div class="right">© <span>4/18/2026</span></div>
+    </footer>
 
-            <label>Option C:</label>
-            <input type="text" id="C_${i}">
 
-            <label>Option D:</label>
-            <input type="text" id="D_${i}">
 
-            <label>Option E:</label>
-            <input type="text" id="E_${i}">
+    <script src="./app/app.js"></script>
 
-            <label>Correct Answer (A–E):</label>
-            <select id="ans_${i}">
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-            </select>
 
-            <hr>
-
-            <label>Code (multi-line):</label>
-            <textarea id="code_${i}" style="height:120px;"></textarea>
-
-            <label>Language:</label>
-            <select id="lang_${i}">
-                <option value="python">python</option>
-                <option value="SQL">SQL</option>
-            </select>
-        `;
-
-        container.appendChild(block);
-    }
-}
-
-// ===============================
-// Build JSON + Download File
-// ===============================
-function generateJSON() {
-    const count = parseInt(document.getElementById("questionCount").value);
-
-    const template = {
-        config: {
-            version: "",
-            exam_name: "",
-            link_base_url: "",
-            link_folder_name: "",
-            link_file_name: "",
-            link_terms: "",
-            shuffle_questions: true,
-            shuffle_options: true,
-            time_limit_minutes: 60
-        },
-        questions: []
-    };
-
-    for (let i = 1; i <= count; i++) {
-
-        // Convert code textarea into array of { line: "..." }
-        const codeText = document.getElementById(`code_${i}`).value;
-        const codeLines = codeText
-            .split("\n")
-            .map(l => ({ line: l }));
-
-        template.questions.push({
-            id: i,
-            problem_description: [{ line: document.getElementById(`pd_${i}`).value }],
-            question: [{ line: document.getElementById(`q_${i}`).value }],
-            options: {
-                A: document.getElementById(`A_${i}`).value,
-                B: document.getElementById(`B_${i}`).value,
-                C: document.getElementById(`C_${i}`).value,
-                D: document.getElementById(`D_${i}`).value,
-                E: document.getElementById(`E_${i}`).value
-            },
-            answer: document.getElementById(`ans_${i}`).value,
-            resource: {
-                code: {
-                    lines: codeLines,
-                    language: document.getElementById(`lang_${i}`).value
-                }
-            }
-        });
-    }
-
-    const blob = new Blob([JSON.stringify(template, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "template.json";
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-</script>
 
 </body>
+
 </html>

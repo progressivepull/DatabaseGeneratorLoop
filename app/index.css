@@ -1,0 +1,62 @@
+body {
+    font-family: Arial;
+    padding: 20px;
+}
+
+/* Top banner using your image */
+.top-banner {
+    width: 100%;
+    height: 230px;
+    background-image: url('learnloop-logo.jpg');
+    /* Replace with your image file */
+    background-size: cover;
+    background-position: center;
+    margin-top: 40px;
+}
+
+.question-block {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    background: lightblue;
+}
+
+
+#generateFieldsBtn {
+  position: relative;
+  top: -12px;   /* moves it down 20px */
+  right: -20px; /* moves it left 10px (because "right" pulls from the right) */
+}
+
+textarea {
+    width: 100%;
+    height: 60px;
+}
+
+input[type="text"]{
+     width: 100%;
+}
+
+select {
+    width: 100%;
+    padding: 5px;
+}
+
+footer {
+    background: #222;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.left {
+    font-weight: bold;
+}
+
+.right {
+    opacity: 0.8;
+}
