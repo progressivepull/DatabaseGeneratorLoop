@@ -181,5 +181,150 @@ $(function () {
 
         URL.revokeObjectURL(url);
     });
+	
+	
+   // ===============================
+    // Upload Existing JSON File
+    // ===============================
+    $("#uploadJSONFile").on("change", function (event) {
+
+        const file = event.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+
+            try {
+
+                const jsonData = JSON.parse(e.target.result);
+
+                if (!jsonData.questions || !Array.isArray(jsonData.questions)) {
+                    alert("Invalid JSON format.");
+                    return;
+                }
+
+                const questions = jsonData.questions;
+
+                // Set question count
+                $("#questionCount").val(questions.length);
+
+                // Generate fields
+                $("#generateFieldsBtn").click();
+
+                // Populate fields
+                questions.forEach((q, index) => {
+
+                    const i = index + 1;
+
+                    // =====================
+                    // Problem Description
+                    // =====================
+                    if (q.problem_description && q.problem_description.length > 0) {
+
+                        $(`#pd_container_${i}`).empty();
+
+                        q.problem_description.forEach((lineObj) => {
+
+    const escapedValue = $("<div>")
+        .text(lineObj.line)
+        .html()
+        .replace(/"/g, "&quot;");
+
+    $(`#pd_container_${i}`).append(`
+        <input 
+            style="margin-top:15px;" 
+            type="text" 
+            class="pd_line" 
+            data-q="${i}" 
+            value="${escapedValue}">
+    `);
+});
+                    }
+
+                    // =====================
+                    // Question Lines
+                    // =====================
+                    if (q.question && q.question.length > 0) {
+
+                        $(`#q_container_${i}`).empty();
+
+                        q.question.forEach((lineObj) => {
+
+    const escapedValue = $("<div>")
+        .text(lineObj.line)
+        .html()
+        .replace(/"/g, "&quot;");
+
+    $(`#q_container_${i}`).append(`
+        <input 
+            style="margin-top:15px;" 
+            type="text" 
+            class="q_line" 
+            data-q="${i}" 
+            value="${escapedValue}">
+    `);
+});
+                    }
+
+                    // =====================
+                    // Options
+                    // =====================
+                    if (q.options) {
+                        $(`#A_${i}`).val(q.options.A || "");
+                        $(`#B_${i}`).val(q.options.B || "");
+                        $(`#C_${i}`).val(q.options.C || "");
+                        $(`#D_${i}`).val(q.options.D || "");
+                        $(`#E_${i}`).val(q.options.E || "");
+                    }
+
+                    // =====================
+                    // Answer
+                    // =====================
+                    if (q.answer) {
+                        $(`#ans_${i}`).val(q.answer);
+                    }
+
+                    // =====================
+                    // Code
+                    // =====================
+                    if (
+                        q.resource &&
+                        q.resource.code &&
+                        q.resource.code.lines
+                    ) {
+
+                        const codeText = q.resource.code.lines
+                            .map(x => x.line)
+                            .join("\n");
+
+                        $(`#code_${i}`).val(codeText);
+                    }
+
+                    // =====================
+                    // Language
+                    // =====================
+                    if (
+                        q.resource &&
+                        q.resource.code &&
+                        q.resource.code.language
+                    ) {
+                        $(`#lang_${i}`).val(q.resource.code.language);
+                    }
+                });
+
+                alert("JSON uploaded successfully.");
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to parse JSON file.");
+            }
+        };
+
+        reader.readAsText(file);
+    });
 
 });
