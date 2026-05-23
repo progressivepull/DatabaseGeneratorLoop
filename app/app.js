@@ -3,6 +3,8 @@ $(function () {
     console.log("App Started.....");
 
     $("#generateJSONBtn").hide();
+	
+	$("#addDeleteQuestions").hide();
 
     // ===============================
     // Generate Question Input Fields
@@ -11,6 +13,9 @@ $(function () {
 
        $("#generateJSONBtn").show();
        $("#noQuestionsInput").hide();
+	   
+	   $("#addDeleteQuestions").show();
+	   $("#uploadJSONFile").hide();
 
         const count = parseInt($("#questionCount").val());
         const $container = $("#questionsContainer");
@@ -187,6 +192,9 @@ $(function () {
     // Upload Existing JSON File
     // ===============================
     $("#uploadJSONFile").on("change", function (event) {
+		
+		$("#addDeleteQuestions").show();
+		$("#uploadJSONFile").hide();
 
         const file = event.target.files[0];
 
@@ -326,5 +334,120 @@ $(function () {
 
         reader.readAsText(file);
     });
+	
+	// ===============================
+	// Add New Question Section
+	// ===============================
+	$(document).on("click", ".addQuestionSectionBtn", function () {
+
+		const $container = $("#questionsContainer");
+
+		const totalQuestions = $(".question-block").length;
+		const newIndex = totalQuestions + 1;
+
+		const block = `
+			<div class="question-block" data-q="${newIndex}">
+				<div style="display:flex; gap:10px; align-items:center;">
+					<h3>Question ${newIndex}</h3>
+
+					<button class="btn btn-success addQuestionSectionBtn" data-q="${newIndex}">
+						+ Add Question Section
+					</button>
+
+					<button class="btn btn-danger deleteQuestionSectionBtn" data-q="${newIndex}">
+						Delete Question Section
+					</button>
+				</div>
+
+				<br><br>
+
+				<!-- Problem Description -->
+				<label>Problem Description:</label>
+				<div class="pd_container" id="pd_container_${newIndex}">
+					<input type="text" class="pd_line" data-q="${newIndex}">
+				</div>
+
+				<br>
+
+				<button class="btn btn-primary addPdLineBtn" data-q="${newIndex}">
+					+ Add Line
+				</button>
+
+				<br><br>
+
+				<hr>
+
+				<!-- Question -->
+				<label>Question Text:</label>
+
+				<div class="q_container" id="q_container_${newIndex}">
+					<input type="text" class="q_line" data-q="${newIndex}">
+				</div>
+
+				<br>
+
+				<button class="btn btn-primary addQLineBtn" data-q="${newIndex}">
+					+ Add Line
+				</button>
+
+				<br><br>
+
+				<hr>
+
+				<label>Option A:</label>
+				<input type="text" id="A_${newIndex}">
+
+				<label>Option B:</label>
+				<input type="text" id="B_${newIndex}">
+
+				<label>Option C:</label>
+				<input type="text" id="C_${newIndex}">
+
+				<label>Option D:</label>
+				<input type="text" id="D_${newIndex}">
+
+				<label>Option E:</label>
+				<input type="text" id="E_${newIndex}">
+
+				<label>Correct Answer:</label>
+				<select id="ans_${newIndex}">
+					<option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option>
+					<option value="D">D</option>
+					<option value="E">E</option>
+				</select>
+
+				<hr>
+
+				<label>Code:</label>
+				<textarea id="code_${newIndex}" style="height:300px;"></textarea>
+
+				<label>Language:</label>
+				<select id="lang_${newIndex}">
+					<option value=""></option>
+					<option value="python">python</option>
+					<option value="SQL">SQL</option>
+				</select>
+			</div>
+		`;
+
+		$container.append(block);
+
+		$("#questionCount").val(newIndex);
+	});
+
+
+	// ===============================
+	// Delete Question Section
+	// ===============================
+	$(document).on("click", ".deleteQuestionSectionBtn", function () {
+
+		$(this).closest(".question-block").remove();
+
+		const totalQuestions = $(".question-block").length;
+
+		$("#questionCount").val(totalQuestions);
+	});
 
 });

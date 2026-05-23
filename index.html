@@ -50,8 +50,10 @@
             <h2>JSON Generator</h2>
 			
 
-			<label>Upload Existing JSON File</label>
-			<input type="file" id="uploadJSONFile" accept=".json" class="form-control mt-2">
+			<div id="uploadJSONFile">
+				<label>Upload Existing JSON File</label>
+				<input type="file" id="uploadJSONFile" accept=".json" class="form-control mt-2">
+			</div>
 			<hr>
 
             <div id="noQuestionsInput">
@@ -63,12 +65,25 @@
 
             <div id="questionsContainer"></div>
 
-            <button id="generateJSONBtn" class="btn btn-success mt-3" style="margin-top:20px;">Download JSON</button>
+			<div id="addDeleteQuestions"style="display:flex; gap:10px; align-items:center;">
+				<h3>Question ${i}</h3>
 
+				<button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
+					+ Add Question Section
+				</button>
 
+				<button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
+					Delete Question Section
+				</button>
+			</div>
 
-    </div>
-    <br><br><br><br><br>
+			<br><br>
+
+			<hr>
+			<button id="generateJSONBtn" class="btn btn-success mt-3" style="margin-top:20px;">Download JSON</button>
+		
+	</div>
+	<br><br><br><br><br>
 
     <footer>
         <div class="left">LearnLoop</div>
