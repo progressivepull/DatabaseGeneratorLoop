@@ -1,6 +1,5 @@
 body {
     font-family: Arial;
-    padding: 20px;
 }
 
 /* Top banner using your image */
@@ -24,9 +23,11 @@ body {
 
 
 #generateFieldsBtn {
-  position: relative;
-  top: -12px;   /* moves it down 20px */
-  right: -20px; /* moves it left 10px (because "right" pulls from the right) */
+    position: relative;
+    top: -12px;
+    /* moves it down 20px */
+    right: -20px;
+    /* moves it left 10px (because "right" pulls from the right) */
 }
 
 textarea {
@@ -34,8 +35,8 @@ textarea {
     height: 60px;
 }
 
-input[type="text"]{
-     width: 100%;
+input[type="text"] {
+    width: 100%;
 }
 
 select {

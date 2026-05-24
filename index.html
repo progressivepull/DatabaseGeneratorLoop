@@ -47,43 +47,43 @@
 
     <div class="container mt-5">
 
-            <h2>JSON Generator</h2>
-			
-
-			<div id="uploadJSONFile">
-				<label>Upload Existing JSON File</label>
-				<input type="file" id="uploadJSONFile" accept=".json" class="form-control mt-2">
-			</div>
-			<hr>
-
-            <div id="noQuestionsInput">
-                <label>How many questions?</label>
-                <input type="number" id="questionCount" min="1" value="1">
-                <button id="generateFieldsBtn" class="btn btn-info mt-3" >Generate</button>
-            </div>
+        <h2>JSON Generator</h2>
 
 
-            <div id="questionsContainer"></div>
+        <div id="uploadJSONFile">
+            <label>Upload Existing JSON File</label>
+            <input type="file" id="uploadJSONFile" accept=".json" class="form-control mt-2">
+        </div>
 
-			<div id="addDeleteQuestions"style="display:flex; gap:10px; align-items:center;">
-				<h3>Question ${i}</h3>
+        <div id="noQuestionsInput">
+            <label>How many questions?</label>
+            <input type="number" id="questionCount" min="1" value="1">
+            <button id="generateFieldsBtn" class="btn btn-info mt-3">Generate</button>
+        </div>
 
-				<button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
-					+ Add Question Section
-				</button>
 
-				<button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
-					Delete Question Section
-				</button>
-			</div>
+        <div id="questionsContainer"></div>
 
-			<br><br>
+        <br><br>
 
-			<hr>
-			<button id="generateJSONBtn" class="btn btn-success mt-3" style="margin-top:20px;">Download JSON</button>
-		
-	</div>
-	<br><br><br><br><br>
+        <div id="addDeleteQuestions" style="display:flex; gap:10px; align-items:center;">
+            <h3>Question ${i}</h3>
+
+            <button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
+                + Add Question Section
+            </button>
+
+            <button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
+                Delete Question Section
+            </button>
+        </div>
+
+        <br><br>
+
+        <button id="generateJSONBtn" class="btn btn-success mt-3" style="margin-top:20px;">Download JSON</button>
+
+    </div>
+    <br><br><br><br><br>
 
     <footer>
         <div class="left">LearnLoop</div>
