@@ -3,19 +3,20 @@ $(function () {
     console.log("App Started.....");
 
     $("#generateJSONBtn").hide();
-	
-	$("#addDeleteQuestions").hide();
+
+    $("#addDeleteQuestions").hide();
 
     // ===============================
     // Generate Question Input Fields
     // ===============================
     $("#generateFieldsBtn").on("click", function () {
 
-       $("#generateJSONBtn").show();
-       $("#noQuestionsInput").hide();
-	   
-	   $("#addDeleteQuestions").show();
-	   $("#uploadJSONFile").hide();
+        $("#generateJSONBtn").show();
+        $("#noQuestionsInput").hide();
+
+        $("#addDeleteQuestions").show();
+        $("#uploadJSONFile").hide();
+        $("#createUploadText").hide();
 
         const count = parseInt($("#questionCount").val());
         const $container = $("#questionsContainer");
@@ -26,7 +27,19 @@ $(function () {
 
             const block = `
                 <div class="question-block" data-q="${i}">
+
+                <div id="addDeleteQuestions" style="display:flex; gap:10px; align-items:center;">
                     <h3>Question ${i}</h3>
+
+                    <button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
+                         Add Question Section
+                    </button>
+
+                    <button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
+                        Delete Question Section
+                    </button>
+                </div>
+
                     <br><br>
 
                     <!-- Problem Description -->
@@ -186,15 +199,17 @@ $(function () {
 
         URL.revokeObjectURL(url);
     });
-	
-	
-   // ===============================
+
+
+    // ===============================
     // Upload Existing JSON File
     // ===============================
     $("#uploadJSONFile").on("change", function (event) {
-		
-		$("#addDeleteQuestions").show();
-		$("#uploadJSONFile").hide();
+
+        $("#addDeleteQuestions").show();
+        $("#uploadJSONFile").hide();
+
+        $("#createUploadText").hide();
 
         const file = event.target.files[0];
 
@@ -237,12 +252,12 @@ $(function () {
 
                         q.problem_description.forEach((lineObj) => {
 
-    const escapedValue = $("<div>")
-        .text(lineObj.line)
-        .html()
-        .replace(/"/g, "&quot;");
+                            const escapedValue = $("<div>")
+                                .text(lineObj.line)
+                                .html()
+                                .replace(/"/g, "&quot;");
 
-    $(`#pd_container_${i}`).append(`
+                            $(`#pd_container_${i}`).append(`
         <input 
             style="margin-top:15px;" 
             type="text" 
@@ -250,7 +265,7 @@ $(function () {
             data-q="${i}" 
             value="${escapedValue}">
     `);
-});
+                        });
                     }
 
                     // =====================
@@ -262,12 +277,12 @@ $(function () {
 
                         q.question.forEach((lineObj) => {
 
-    const escapedValue = $("<div>")
-        .text(lineObj.line)
-        .html()
-        .replace(/"/g, "&quot;");
+                            const escapedValue = $("<div>")
+                                .text(lineObj.line)
+                                .html()
+                                .replace(/"/g, "&quot;");
 
-    $(`#q_container_${i}`).append(`
+                            $(`#q_container_${i}`).append(`
         <input 
             style="margin-top:15px;" 
             type="text" 
@@ -275,7 +290,7 @@ $(function () {
             data-q="${i}" 
             value="${escapedValue}">
     `);
-});
+                        });
                     }
 
                     // =====================
@@ -334,18 +349,18 @@ $(function () {
 
         reader.readAsText(file);
     });
-	
-	// ===============================
-	// Add New Question Section
-	// ===============================
-	$(document).on("click", ".addQuestionSectionBtn", function () {
 
-		const $container = $("#questionsContainer");
+    // ===============================
+    // Add New Question Section
+    // ===============================
+    $(document).on("click", ".addQuestionSectionBtn", function () {
 
-		const totalQuestions = $(".question-block").length;
-		const newIndex = totalQuestions + 1;
+        const $container = $("#questionsContainer");
 
-		const block = `
+        const totalQuestions = $(".question-block").length;
+        const newIndex = totalQuestions + 1;
+
+        const block = `
 			<div class="question-block" data-q="${newIndex}">
 				<div style="display:flex; gap:10px; align-items:center;">
 					<h3>Question ${newIndex}</h3>
@@ -432,22 +447,22 @@ $(function () {
 			</div>
 		`;
 
-		$container.append(block);
+        $container.append(block);
 
-		$("#questionCount").val(newIndex);
-	});
+        $("#questionCount").val(newIndex);
+    });
 
 
-	// ===============================
-	// Delete Question Section
-	// ===============================
-	$(document).on("click", ".deleteQuestionSectionBtn", function () {
+    // ===============================
+    // Delete Question Section
+    // ===============================
+    $(document).on("click", ".deleteQuestionSectionBtn", function () {
 
-		$(this).closest(".question-block").remove();
+        $(this).closest(".question-block").remove();
 
-		const totalQuestions = $(".question-block").length;
+        const totalQuestions = $(".question-block").length;
 
-		$("#questionCount").val(totalQuestions);
-	});
+        $("#questionCount").val(totalQuestions);
+    });
 
 });

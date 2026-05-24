@@ -48,7 +48,7 @@
     <div class="container mt-5">
 
         <h2>JSON Generator</h2>
-        <p class="monaco-bold">Create or upload a JSON file for your quiz questions.</p>
+        <p id="createUploadText" class="monaco-bold">Create or upload a JSON file for your quiz questions.</p>
         <br><br>
 
         <div class="box" id="uploadJSONFile">
@@ -68,10 +68,8 @@
         <br><br>
 
         <div id="addDeleteQuestions" style="display:flex; gap:10px; align-items:center;">
-            <h3>Question ${i}</h3>
-
             <button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
-                + Add Question Section
+                Add Question Section
             </button>
 
             <button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
