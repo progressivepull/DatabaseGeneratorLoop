@@ -3,8 +3,54 @@ $(function () {
     console.log("App Started.....");
 
     $("#generateJSONBtn").hide();
-
     $("#addDeleteQuestions").hide();
+
+    // ==========================================
+    // Central Renumbering & ID Sync Engine
+    // ==========================================
+    function renumberQuestions() {
+        const $blocks = $(".question-block");
+
+        $blocks.each(function (index) {
+            const i = index + 1; // 1-based index
+            const $block = $(this);
+
+            // Update block metadata
+            $block.attr("data-q", i);
+
+            // Update headers and utility actions
+            $block.find("h3").text(`Question ${i}`);
+            $block.find(".addQuestionSectionBtn").attr("data-q", i);
+            $block.find(".deleteQuestionSectionBtn").attr("data-q", i);
+
+            // Update Problem Description container & buttons
+            $block.find(".pd_container").attr("id", `pd_container_${i}`);
+            $block.find(".pd_line").attr("data-q", i);
+            $block.find(".addPdLineBtn").attr("data-q", i);
+
+            // Update Question Container & buttons
+            $block.find(".q_container").attr("id", `q_container_${i}`);
+            $block.find(".q_line").attr("data-q", i);
+            $block.find(".addQLineBtn").attr("data-q", i);
+
+            // Update Answer Options IDs
+            $block.find("input[id^='A_']").attr("id", `A_${i}`);
+            $block.find("input[id^='B_']").attr("id", `B_${i}`);
+            $block.find("input[id^='C_']").attr("id", `C_${i}`);
+            $block.find("input[id^='D_']").attr("id", `D_${i}`);
+            $block.find("input[id^='E_']").attr("id", `E_${i}`);
+
+            // Update Answer Selection Dropdown
+            $block.find("select[id^='ans_']").attr("id", `ans_${i}`);
+
+            // Update Code Textarea & Language dropdown
+            $block.find("textarea[id^='code_']").attr("id", `code_${i}`);
+            $block.find("select[id^='lang_']").attr("id", `lang_${i}`);
+        });
+
+        // Keep the master global counter synchronized
+        $("#questionCount").val($blocks.length);
+    }
 
     // ===============================
     // Generate Question Input Fields
@@ -13,7 +59,6 @@ $(function () {
 
         $("#generateJSONBtn").show();
         $("#noQuestionsInput").hide();
-
         $("#addDeleteQuestions").show();
         $("#uploadJSONFile").hide();
         $("#createUploadText").hide();
@@ -24,86 +69,11 @@ $(function () {
         $container.empty();
 
         for (let i = 1; i <= count; i++) {
-
-            const block = `
-                <div class="question-block" data-q="${i}">
-
-                <div id="addDeleteQuestions" style="display:flex; gap:10px; align-items:center;">
-                    <h3>Question ${i}</h3>
-
-                    <button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
-                         Add Question Section
-                    </button>
-
-                    <button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
-                        Delete Question Section
-                    </button>
-                </div>
-
-                    <br><br>
-
-                    <!-- Problem Description -->
-                    <label>Problem Description:</label>
-                    <div class="pd_container" id="pd_container_${i}">
-                        <input type="text" class="pd_line" data-q="${i}">
-                    </div>
-                    <br>
-                    <button class="btn btn-primary addPdLineBtn" data-q="${i}">+ Add Line</button><br>
-                    <br>
-
-                    <hr>
-
-                    <!-- Question -->
-                    <label>Question Text:</label>
-                    <div class="q_container" id="q_container_${i}">
-                        <input type="text" class="q_line" data-q="${i}">
-                    </div>
-                    <br>
-                    <button class="btn btn-primary addQLineBtn" data-q="${i}">+ Add Line</button><br>
-                    <br>
-
-                    <hr>
-
-                    <label>Option A:</label>
-                    <input type="text" id="A_${i}">
-
-                    <label>Option B:</label>
-                    <input type="text" id="B_${i}">
-
-                    <label>Option C:</label>
-                    <input type="text" id="C_${i}">
-
-                    <label>Option D:</label>
-                    <input type="text" id="D_${i}">
-
-                    <label>Option E:</label>
-                    <input type="text" id="E_${i}">
-
-                    <label>Correct Answer:</label>
-                    <select id="ans_${i}">
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                        <option value="E">E</option>
-                    </select>
-
-                    <hr>
-
-                    <label>Code:</label>
-                    <textarea id="code_${i}" style="height:300px;"></textarea>
-
-                    <label>Language:</label>
-                    <select id="lang_${i}">
-						<option value=""></option>
-                        <option value="python">python</option>
-                        <option value="SQL">SQL</option>
-                    </select>
-                </div>
-            `;
-
+            const block = createQuestionBlockHTML(i);
             $container.append(block);
         }
+
+        renumberQuestions();
     });
 
 
@@ -126,7 +96,10 @@ $(function () {
     // ===============================
     $("#generateJSONBtn").on("click", function () {
 
-        const count = parseInt($("#questionCount").val());
+        // Ensure everything is perfectly sequential before building
+        renumberQuestions();
+
+        const count = $(".question-block").length;
 
         const template = {
             config: {
@@ -208,21 +181,15 @@ $(function () {
 
         $("#addDeleteQuestions").show();
         $("#uploadJSONFile").hide();
-
         $("#createUploadText").hide();
 
         const file = event.target.files[0];
-
-        if (!file) {
-            return;
-        }
+        if (!file) return;
 
         const reader = new FileReader();
 
         reader.onload = function (e) {
-
             try {
-
                 const jsonData = JSON.parse(e.target.result);
 
                 if (!jsonData.questions || !Array.isArray(jsonData.questions)) {
@@ -232,70 +199,31 @@ $(function () {
 
                 const questions = jsonData.questions;
 
-                // Set question count
                 $("#questionCount").val(questions.length);
-
-                // Generate fields
                 $("#generateFieldsBtn").click();
 
-                // Populate fields
                 questions.forEach((q, index) => {
-
                     const i = index + 1;
 
-                    // =====================
                     // Problem Description
-                    // =====================
                     if (q.problem_description && q.problem_description.length > 0) {
-
                         $(`#pd_container_${i}`).empty();
-
                         q.problem_description.forEach((lineObj) => {
-
-                            const escapedValue = $("<div>")
-                                .text(lineObj.line)
-                                .html()
-                                .replace(/"/g, "&quot;");
-
-                            $(`#pd_container_${i}`).append(`
-        <input 
-            style="margin-top:15px;" 
-            type="text" 
-            class="pd_line" 
-            data-q="${i}" 
-            value="${escapedValue}">
-    `);
+                            const escapedValue = $("<div>").text(lineObj.line).html().replace(/"/g, "&quot;");
+                            $(`#pd_container_${i}`).append(`<input style="margin-top:15px;" type="text" class="pd_line" data-q="${i}" value="${escapedValue}">`);
                         });
                     }
 
-                    // =====================
                     // Question Lines
-                    // =====================
                     if (q.question && q.question.length > 0) {
-
                         $(`#q_container_${i}`).empty();
-
                         q.question.forEach((lineObj) => {
-
-                            const escapedValue = $("<div>")
-                                .text(lineObj.line)
-                                .html()
-                                .replace(/"/g, "&quot;");
-
-                            $(`#q_container_${i}`).append(`
-        <input 
-            style="margin-top:15px;" 
-            type="text" 
-            class="q_line" 
-            data-q="${i}" 
-            value="${escapedValue}">
-    `);
+                            const escapedValue = $("<div>").text(lineObj.line).html().replace(/"/g, "&quot;");
+                            $(`#q_container_${i}`).append(`<input style="margin-top:15px;" type="text" class="q_line" data-q="${i}" value="${escapedValue}">`);
                         });
                     }
 
-                    // =====================
                     // Options
-                    // =====================
                     if (q.options) {
                         $(`#A_${i}`).val(q.options.A || "");
                         $(`#B_${i}`).val(q.options.B || "");
@@ -304,37 +232,17 @@ $(function () {
                         $(`#E_${i}`).val(q.options.E || "");
                     }
 
-                    // =====================
                     // Answer
-                    // =====================
-                    if (q.answer) {
-                        $(`#ans_${i}`).val(q.answer);
-                    }
+                    if (q.answer) $(`#ans_${i}`).val(q.answer);
 
-                    // =====================
                     // Code
-                    // =====================
-                    if (
-                        q.resource &&
-                        q.resource.code &&
-                        q.resource.code.lines
-                    ) {
-
-                        const codeText = q.resource.code.lines
-                            .map(x => x.line)
-                            .join("\n");
-
+                    if (q.resource && q.resource.code && q.resource.code.lines) {
+                        const codeText = q.resource.code.lines.map(x => x.line).join("\n");
                         $(`#code_${i}`).val(codeText);
                     }
 
-                    // =====================
                     // Language
-                    // =====================
-                    if (
-                        q.resource &&
-                        q.resource.code &&
-                        q.resource.code.language
-                    ) {
+                    if (q.resource && q.resource.code && q.resource.code.language) {
                         $(`#lang_${i}`).val(q.resource.code.language);
                     }
                 });
@@ -354,102 +262,16 @@ $(function () {
     // Add New Question Section
     // ===============================
     $(document).on("click", ".addQuestionSectionBtn", function () {
-
         const $container = $("#questionsContainer");
 
-        const totalQuestions = $(".question-block").length;
-        const newIndex = totalQuestions + 1;
-
-        const block = `
-			<div class="question-block" data-q="${newIndex}">
-				<div style="display:flex; gap:10px; align-items:center;">
-					<h3>Question ${newIndex}</h3>
-
-					<button class="btn btn-success addQuestionSectionBtn" data-q="${newIndex}">
-						+ Add Question Section
-					</button>
-
-					<button class="btn btn-danger deleteQuestionSectionBtn" data-q="${newIndex}">
-						Delete Question Section
-					</button>
-				</div>
-
-				<br><br>
-
-				<!-- Problem Description -->
-				<label>Problem Description:</label>
-				<div class="pd_container" id="pd_container_${newIndex}">
-					<input type="text" class="pd_line" data-q="${newIndex}">
-				</div>
-
-				<br>
-
-				<button class="btn btn-primary addPdLineBtn" data-q="${newIndex}">
-					+ Add Line
-				</button>
-
-				<br><br>
-
-				<hr>
-
-				<!-- Question -->
-				<label>Question Text:</label>
-
-				<div class="q_container" id="q_container_${newIndex}">
-					<input type="text" class="q_line" data-q="${newIndex}">
-				</div>
-
-				<br>
-
-				<button class="btn btn-primary addQLineBtn" data-q="${newIndex}">
-					+ Add Line
-				</button>
-
-				<br><br>
-
-				<hr>
-
-				<label>Option A:</label>
-				<input type="text" id="A_${newIndex}">
-
-				<label>Option B:</label>
-				<input type="text" id="B_${newIndex}">
-
-				<label>Option C:</label>
-				<input type="text" id="C_${newIndex}">
-
-				<label>Option D:</label>
-				<input type="text" id="D_${newIndex}">
-
-				<label>Option E:</label>
-				<input type="text" id="E_${newIndex}">
-
-				<label>Correct Answer:</label>
-				<select id="ans_${newIndex}">
-					<option value="A">A</option>
-					<option value="B">B</option>
-					<option value="C">C</option>
-					<option value="D">D</option>
-					<option value="E">E</option>
-				</select>
-
-				<hr>
-
-				<label>Code:</label>
-				<textarea id="code_${newIndex}" style="height:300px;"></textarea>
-
-				<label>Language:</label>
-				<select id="lang_${newIndex}">
-					<option value=""></option>
-					<option value="python">python</option>
-					<option value="SQL">SQL</option>
-				</select>
-			</div>
-		`;
+        // Push a fallback index initially, renumbering will clean it up instantly
+        const dummyIndex = $(".question-block").length + 1;
+        const block = createQuestionBlockHTML(dummyIndex);
 
         $container.append(block);
 
-        $("#questionCount").val(newIndex);
+        // Recalculate and reset all structural indexes sequentially
+        renumberQuestions();
     });
 
 
@@ -457,12 +279,89 @@ $(function () {
     // Delete Question Section
     // ===============================
     $(document).on("click", ".deleteQuestionSectionBtn", function () {
-
+        // Prevent accidental elimination of your last standing element if desired,
+        // otherwise it will clear it down safely to 0.
         $(this).closest(".question-block").remove();
 
-        const totalQuestions = $(".question-block").length;
-
-        $("#questionCount").val(totalQuestions);
+        // Run full cleanup mapping loop
+        renumberQuestions();
     });
+
+    // ===============================
+    // HTML Template Builder
+    // ===============================
+    function createQuestionBlockHTML(i) {
+        return `
+            <div class="question-block" data-q="${i}">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <h3>Question ${i}</h3>
+                    <button class="btn btn-success addQuestionSectionBtn" data-q="${i}">
+                        + Add Question Section
+                    </button>
+                    <button class="btn btn-danger deleteQuestionSectionBtn" data-q="${i}">
+                        Delete Question Section
+                    </button>
+                </div>
+
+                <br><br>
+
+                <label>Problem Description:</label>
+                <div class="pd_container" id="pd_container_${i}">
+                    <input type="text" class="pd_line" data-q="${i}">
+                </div>
+                <br>
+                <button class="btn btn-primary addPdLineBtn" data-q="${i}">+ Add Line</button><br>
+                <br>
+
+                <hr>
+
+                <label>Question Text:</label>
+                <div class="q_container" id="q_container_${i}">
+                    <input type="text" class="q_line" data-q="${i}">
+                </div>
+                <br>
+                <button class="btn btn-primary addQLineBtn" data-q="${i}">+ Add Line</button><br>
+                <br>
+
+                <hr>
+
+                <label>Option A:</label>
+                <input type="text" id="A_${i}">
+
+                <label>Option B:</label>
+                <input type="text" id="B_${i}">
+
+                <label>Option C:</label>
+                <input type="text" id="C_${i}">
+
+                <label>Option D:</label>
+                <input type="text" id="D_${i}">
+
+                <label>Option E:</label>
+                <input type="text" id="E_${i}">
+
+                <label>Correct Answer:</label>
+                <select id="ans_${i}">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+
+                <hr>
+
+                <label>Code:</label>
+                <textarea id="code_${i}" style="height:300px;"></textarea>
+
+                <label>Language:</label>
+                <select id="lang_${i}">
+                    <option value=""></option>
+                    <option value="python">python</option>
+                    <option value="SQL">SQL</option>
+                </select>
+            </div>
+        `;
+    }
 
 });
